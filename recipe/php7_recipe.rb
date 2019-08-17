@@ -1,7 +1,14 @@
 # encoding: utf-8
 require_relative 'php_common_recipes'
+require_relative '../lib/openssl_replace'
 
 class Php7Recipe < BaseRecipe
+  def initialize(name, version, options = {})
+    super name, version, options
+    # override openssl in container
+    OpenSSLReplace.replace_openssl("OpenSSL_1_0_2s") if major_version =~ /^5/
+  end
+
   def configure_options
     [
       '--disable-static',
@@ -46,13 +53,13 @@ class Php7Recipe < BaseRecipe
       '--enable-mbstring=shared',
       '--enable-mbregex',
       '--enable-exif=shared',
-      '--with-openssl=shared',
       '--enable-fpm',
       '--enable-pcntl=shared',
       '--enable-sysvsem=shared',
       '--enable-sysvshm=shared',
       '--enable-sysvmsg=shared',
       '--enable-shmop=shared',
+      major_version =~ /^5/ ? '--with-openssl=/usr/local/openssl/' : '--with-openssl=shared',
       "#{ENV['STACK'] == 'cflinuxfs3' ? '--with-pdo_sqlsrv=shared' : ''}"
     ]
   end

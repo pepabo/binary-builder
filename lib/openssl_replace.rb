@@ -7,8 +7,8 @@ class OpenSSLReplace
     raise "Could not run #{args}" unless $?.success?
   end
 
-  def self.replace_openssl()
-    filebase = 'OpenSSL_1_1_0g'
+  def self.replace_openssl(version=nil)
+    filebase = version || 'OpenSSL_1_1_0g'
     filename = "#{filebase}.tar.gz"
     openssltar = "https://github.com/openssl/openssl/archive/#{filename}"
 
@@ -17,9 +17,10 @@ class OpenSSLReplace
       run('tar', 'xf', filename)
       Dir.chdir("openssl-#{filebase}") do
         run("./config",
-                   "--prefix=/usr",
-                   "--libdir=/lib/x86_64-linux-gnu",
-                   "--openssldir=/include/x86_64-linux-gnu/openssl")
+          "--prefix=/usr/local/openssl",
+          "shared",
+          "-fPIC"
+        )
         run('make')
         run('make', 'install')
       end
