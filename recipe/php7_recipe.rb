@@ -126,6 +126,8 @@ class Php7Recipe < BaseRecipe
       cp -a /usr/lib/x86_64-linux-gnu/librecode.so* #{path}/lib/
       cp -a /usr/lib/x86_64-linux-gnu/libtommath.so* #{path}/lib/
       cp -a /usr/lib/x86_64-linux-gnu/libmaxminddb.so* #{path}/lib/
+      cp -a /usr/lib/x86_64-linux-gnu/libmaxminddb.so* #{path}/lib/
+      cp -a /usr/local/openssl/lib/lib*so* #{path}/lib/
     eof
 
     if IonCubeRecipe.build_ioncube?(version)

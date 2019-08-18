@@ -15,4 +15,4 @@ rebase:
 	git merge cf/master
 
 release:
-	ghr v$(VERSION) *tgz
+	ghr -replace v$(VERSION) *tgz
