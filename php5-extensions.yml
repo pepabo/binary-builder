@@ -1,0 +1,6 @@
+native_modules: []
+extensions:
+- name: idnkit
+  version: 20031204
+  md5: 5f681f8c32648680ae462bf5d7c6f499
+  klass: IDNKitRecipe

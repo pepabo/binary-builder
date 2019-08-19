@@ -509,3 +509,59 @@ class XhprofPeclRecipe < PeclRecipe
     "#{super}/extension"
   end
 end
+
+class IDNKitRecipe < PeclRecipe
+  def url
+    "http://www.sera.desuyo.net/idnkit/php-idnkit-#{version}.tar.gz"
+  end
+
+  def patch
+    patch_content = <<~EOS
+--- xxx/idnkit.c
++++ yyy/idnkit.c
+@@ -36,7 +36,11 @@ static int le_idnkit;
+  *
+  * Every user visible function must have an entry in idnkit_functions[].
+  */
++#if ZEND_MODULE_API_NO >= 20100525
++zend_function_entry idnkit_functions[] = {
++#else
+ function_entry idnkit_functions[] = {
++#endif
+ 	PHP_FE(idnkit_decodename,	NULL)
+ 	PHP_FE(idnkit_encodename,	NULL)
+ 	PHP_FE(idnkit_errno,		NULL)
+@@ -104,7 +108,7 @@ PHP_MINIT_FUNCTION(idnkit)
+ 	idn_nameinit(1);
+
+ 	/* get idnkit version */
+-	REGISTER_STRING_CONSTANT("IDNKIT_VERSION", (char*)idn_version_getstring(), CONST_CS | CONST_PERSISTENT);
++	REGISTER_STRING_CONSTANT("IDNKIT_VERSION", "1.0", CONST_CS | CONST_PERSISTENT);
+
+ 	/* idnkit actions */
+ 	REGISTER_LONG_CONSTANT("IDNKIT_DELIMMAP",		IDN_DELIMMAP,		CONST_CS | CONST_PERSISTENT);
+    EOS
+    File.open("#{work_path}/php-idnkit.patch","w") do |f|
+      f.puts(patch_content)
+    end
+
+    system <<-eof
+      cd #{work_path}
+      patch -lsp1 --dry-run < #{work_path}/php-idnkit.patch >/dev/null 2>&1
+      if [ $? -eq 0 ]; then
+        patch -lsp1 < #{work_path}/php-idnkit.patch
+      fi
+    eof
+  end
+
+  def work_path
+    File.join(tmp_path, "idnkit")
+  end
+
+  def configure
+    return if configured?
+
+    execute('configure', %w(bash -c phpize))
+    execute('configure', %w(sh configure) + computed_options)
+  end
+end

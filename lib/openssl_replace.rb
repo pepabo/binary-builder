@@ -13,15 +13,17 @@ class OpenSSLReplace
     openssltar = "https://github.com/openssl/openssl/archive/#{filename}"
 
     Dir.mktmpdir do |dir|
-      run('wget', openssltar)
-      run('tar', 'xf', filename)
+      unless File.exists?(filename)
+        run('wget', openssltar)
+        run('tar', 'xf', filename)
+      end
       Dir.chdir("openssl-#{filebase}") do
         run("./config",
           "--prefix=/usr/local/openssl",
           "shared",
           "-fPIC"
         )
-        run('make')
+        run('make -j 4')
         run('make', 'install')
       end
     end

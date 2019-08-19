@@ -35,6 +35,7 @@ class PhpMeal
       apt-get -y upgrade
       apt-get -y install #{apt_packages}
       #{install_libuv}
+      #{install_idnkit}
       #{install_argon2}
       #{symlink_commands}
     eof
@@ -201,6 +202,19 @@ class PhpMeal
        sh autogen.sh
        ./configure
        make install
+       )
+    )
+  end
+
+  def install_idnkit
+    %q((
+        cd /usr/local/src
+        curl -O -L http://www.nic.ad.jp/ja/idn/idnkit/download/sources/idnkit-1.0-src.tar.gz
+        tar zxf idnkit-1.0-src.tar.gz
+        cd idnkit-1.0-src
+        ./configure
+        make
+        make install
        )
     )
   end
