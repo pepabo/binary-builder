@@ -11,3 +11,4 @@ mini_portile/
 oracle_client_libs
 *deb*
 openssl*
+vendor
