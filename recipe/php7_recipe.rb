@@ -27,11 +27,9 @@ class Php7Recipe < BaseRecipe
       '--enable-dba=shared',
       "--with-password-argon2=#{ENV['STACK'] == 'cflinuxfs3' ? '/usr/lib/x86_64-linux-gnu' : '/usr/local'}",
       '--with-cdb',
-      '--with-gdbm',
-      '--with-mcrypt=shared',
+      '--without-gdbm',
       '--with-mysqli=shared',
       '--enable-pdo=shared',
-      '--with-pdo-sqlite=shared,/usr',
       '--with-pdo-mysql=shared,mysqlnd',
       '--with-gd=shared',
       '--with-jpeg-dir=/usr',
@@ -42,10 +40,6 @@ class Php7Recipe < BaseRecipe
       '--with-pspell=shared',
       '--with-gettext=shared',
       '--with-gmp=shared',
-      '--with-imap=shared',
-      '--with-imap-ssl=shared',
-      '--with-ldap=shared',
-      '--with-ldap-sasl',
       '--with-zlib=shared',
       "#{ENV['STACK'] == 'cflinuxfs3' ? '--with-libzip=/usr/local/lib' : ''}",
       '--with-xsl=shared',
@@ -59,7 +53,12 @@ class Php7Recipe < BaseRecipe
       '--enable-sysvshm=shared',
       '--enable-sysvmsg=shared',
       '--enable-shmop=shared',
+      '--without-pdo-sqlite',
+      '--without-sqlite',
+      "--with-password-argon2=#{ENV['STACK'] == 'cflinuxfs3' ? '/usr/lib/x86_64-linux-gnu' : '/usr/local'}",
+      '--with-mcrypt=shared',
       major_version =~ /^5/ ? '--with-openssl=/usr/local/openssl/' : '--with-openssl=shared',
+      '--with-mcrypt',
       "#{ENV['STACK'] == 'cflinuxfs3' ? '--with-pdo_sqlsrv=shared' : ''}"
     ]
   end
@@ -83,6 +82,8 @@ class Php7Recipe < BaseRecipe
     digest   = Digest::MD5.hexdigest(computed_options.to_s)
     File.open(md5_file, 'w') { |f| f.write digest }
 
+    makefile = File.join(tmp_path, "php-#{version}/Makefile")
+    sytem "sed -i 's/-lxml2 -lcrypt/-lxml2 -lcrypt -lstdc++/g' #{makefile} "if version =~ /^5.3/
     # LIBS=-lz enables using zlib when configuring
     execute('configure', ['bash', '-c', "LIBS=-lz ./configure #{computed_options.join ' '}"])
   end

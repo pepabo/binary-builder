@@ -31,9 +31,9 @@ class PhpMeal
 
   def cook
     system <<-eof
-      apt-get update
-      apt-get -y upgrade
-      apt-get -y install #{apt_packages}
+      apt-get -qqy update
+      apt-get -qqy upgrade
+      apt-get -qqy install #{apt_packages}
       #{install_libuv}
       #{install_idnkit}
       #{install_argon2}
@@ -45,8 +45,8 @@ class PhpMeal
         system "ln -s libclntsh.so.* libclntsh.so"
       end
     end
-
     php_recipe.cook
+
     php_recipe.activate
 
     # native libraries
@@ -145,6 +145,9 @@ class PhpMeal
   def apt_packages
     packages = php_common_apt_packages
     packages += php7_apt_packages
+    if @version =~ /^5.3/
+      packages << "libmysqlclient-dev"
+    end
     if ENV['STACK'] == 'cflinuxfs2'
       packages += php7_cflinuxfs2_apt_packages
     elsif ENV['STACK'] == 'cflinuxfs3'
