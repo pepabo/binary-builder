@@ -18,7 +18,5 @@ rebase:
 	git merge cf/master
 
 release:
-	rm -f dist
-	mkdir -p dist
-	mv *tgz dit
+	mv -f *tgz dist | true
 	ghr -replace v$(VERSION) dist

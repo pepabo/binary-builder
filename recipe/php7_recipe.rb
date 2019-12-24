@@ -76,16 +76,16 @@ class Php7Recipe < BaseRecipe
   end
 
   def configure
+    makefile = File.join(tmp_path, "php-#{version}/Makefile")
     return if configured?
 
     md5_file = File.join(tmp_path, 'configure.md5')
     digest   = Digest::MD5.hexdigest(computed_options.to_s)
     File.open(md5_file, 'w') { |f| f.write digest }
 
-    makefile = File.join(tmp_path, "php-#{version}/Makefile")
-    sytem "sed -i 's/-lxml2 -lcrypt/-lxml2 -lcrypt -lstdc++/g' #{makefile} "if version =~ /^5.3/
     # LIBS=-lz enables using zlib when configuring
     execute('configure', ['bash', '-c', "LIBS=-lz ./configure #{computed_options.join ' '}"])
+    system "sed -i 's/-lxml2 -lcrypt/-lxml2 -lcrypt -lstdc++/g' #{makefile}" if version =~ /^5.3/
   end
 
   def major_version
