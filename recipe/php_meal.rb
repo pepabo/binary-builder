@@ -147,6 +147,7 @@ class PhpMeal
     packages += php7_apt_packages
     if @version =~ /^5.3/
       packages << "libmysqlclient-dev"
+      packages << "libevent-dev"
     end
     if ENV['STACK'] == 'cflinuxfs2'
       packages += php7_cflinuxfs2_apt_packages

@@ -1,4 +1,4 @@
-VERSION=0.0.2
+VERSION=0.0.3
 php: php/5.6.9
 
 php/5.6.9:
